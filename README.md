@@ -1,4 +1,4 @@
 # nutz-practise
 
-learning is not to delaying. it's your things.  -- do just little.
+learning do not delaying. it's your own things. -- do just little. done.
 
