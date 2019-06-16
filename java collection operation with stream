@@ -1,0 +1,24 @@
+this is a list<map<String,Object>> stream filter with conditions:
+    public Map<String, List<Map<String,Object>>> getMedalAwardListByCondition(Map<String,String> paramMap){
+        String sql =" select * from eas_teacher_marking ism where ism.school_id=? and ism.teacher_id=?  and ism.gmt_modified between ? and ? group by ism.gmt_modified,ism.class_id ";
+        List<Map<String, Object>> result = jdbcTemplate.queryForList(sql,
+                new Object[]{paramMap.get("schoolId"),paramMap.get("teacherId"),paramMap.get("startTime"),paramMap.get("endTime")});
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Map<String, List<Map<String,Object>>> resultMap =
+                result.stream().collect(Collectors.groupingBy(e -> formatter.format(DateUtil.str2date(e.get("gmt_modified").toString()))));
+        final Date nowdate=new Date();
+        resultMap.forEach((k,v)->{
+            v.forEach(e->{
+                Long nowTime=nowdate.getTime();
+                Long creatTime = DateUtil.str2date(e.get("gmt_modified").toString()).getTime();
+                if((nowTime-creatTime)>5*60*1000){
+                    e.put("whetherWithDraw",false);
+                }else{
+                    e.put("whetherWithDraw",true);
+                }
+            });
+        });
+        return resultMap;
+    }
+    
+    line 10 to 20 is the answer for group by  one of the map key. extends if you want to do other things just like sum or anything else.
